@@ -9,7 +9,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++14 -O0")
 # SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 # OpenCV
-find_package(OpenCV 3.2 REQUIRED) # 版本设置
+if(DEFINED ENV{CONDA_PREFIX})
+	list(PREPEND CMAKE_PREFIX_PATH "$ENV{CONDA_PREFIX}")
+	link_directories("$ENV{CONDA_PREFIX}/lib")
+	set(CMAKE_BUILD_RPATH "$ENV{CONDA_PREFIX}/lib")
+	set(CMAKE_INSTALL_RPATH "$ENV{CONDA_PREFIX}/lib")
+endif()
+
+find_package(OpenCV 4.13 REQUIRED CONFIG) # 版本设置
 include_directories(${OpenCV_INCLUDE_DIRS})
 message(STATUS "OpenCV version: ${OpenCV_VERSION}")
 message(STATUS "OpenCV_LIBS:${OpenCV_LIBS}")
@@ -20,10 +27,11 @@ add_executable(calib_undistort 02_apply_mono_calib.cc)
 add_executable(calib_pro 03_apply_mono_calib_2.cc) 
 add_executable(calib_headpose 04_apply_mono_calib_3.cc) 
 add_executable(calib_dist 05_pnp_calc_distance.cc) 
+add_executable(detect_haruco 11_detect_haruco.cc)
 
 target_link_libraries(calib_pro ${OpenCV_LIBS} pthread)
 target_link_libraries(monocalib ${OpenCV_LIBS} pthread)
 target_link_libraries(calib_undistort ${OpenCV_LIBS} pthread)
-target_link_libraries(calib_undistort ${OpenCV_LIBS} pthread)
 target_link_libraries(calib_headpose ${OpenCV_LIBS} pthread)
 target_link_libraries(calib_dist ${OpenCV_LIBS} pthread)
+target_link_libraries(detect_haruco ${OpenCV_LIBS} pthread)
